@@ -50,12 +50,10 @@ void Server::startReading(std::shared_ptr<boost::asio::ip::tcp::socket> socket)
             {
                 _bufferptr->clear();
                 _bufferptr->resize(*message_size_ptr);
-                //auto bufferptr = std::make_shared<std::vector<char>>(*message_size_ptr);
                 socket->async_receive(boost::asio::buffer(*_bufferptr), [this, socket](const boost::system::error_code& error, size_t bytes)
                     {
                         handleReadCallBack(error, bytes, socket, _bufferptr);
                     });
-                
             }
             else
             {
@@ -96,7 +94,7 @@ void Server::broadcast(const std::string& message, std::shared_ptr<boost::asio::
                     {
                         boost::asio::async_write(*client.second, boost::asio::buffer(*message_ptr), [this, message_ptr](const boost::system::error_code& error, size_t bytes)
                         {
-                                handleWriteCallBack(error, bytes);
+                                handleWriteCallBack(error);
                         });
                     }
             });
@@ -105,7 +103,7 @@ void Server::broadcast(const std::string& message, std::shared_ptr<boost::asio::
 }
 
 
-void Server::handleWriteCallBack(const boost::system::error_code& error, std::size_t bytes_transferred)
+void Server::handleWriteCallBack(const boost::system::error_code& error)
 {
     if (error)
     {
